@@ -39,28 +39,18 @@
     </style>
   </head>
   <body>
-    <h1>hello world</h1>
-
+    <form>
+      <input type='file' accept='image/*' multiple='multiple' name='imgs[]'>
+      <button type='submit'>Submit</button>
+    </form>
 
     <!-- The core Firebase JS SDK is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-functions.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-auth.js"></script>
 
-    <!-- TODO: Add SDKs for Firebase products that you want to use
-        https://firebase.google.com/docs/web/setup#available-libraries -->
-
-    <script>
-      // Your web app's Firebase configuration
-      var firebaseConfig = {
-        apiKey: "AIzaSyDO9Xd7vCEBsxsAIiIZp0Piz6EjQw0sF-k",
-        authDomain: "vision-sample-b3dbf.firebaseapp.com",
-        databaseURL: "https://vision-sample-b3dbf-default-rtdb.firebaseio.com",
-        projectId: "vision-sample-b3dbf",
-        storageBucket: "vision-sample-b3dbf.appspot.com",
-        messagingSenderId: "453477097696",
-        appId: "1:453477097696:web:d5d46fac0eb205d88cb085"
-      };
-      // Initialize Firebase
-      firebase.initializeApp(firebaseConfig);
-    </script>
+    <script src="scripts/upload.js"></script>
   </body>
 </html>
