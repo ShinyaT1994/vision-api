@@ -6,15 +6,15 @@ admin.initializeApp();
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//   functions.logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+exports.helloWorld = functions.https.onRequest((request, response) => {
+  functions.logger.info("Hello logs!", {structuredData: true});
+  response.send("Hello from Firebase!");
+});
 
 
 
 
 // Trigger
-functions.storage.object().onFinalize(async (object) =>{
+const trigger = functions.storage.object().onFinalize(async (object) =>{
     console.log("Trigger start!");
 });

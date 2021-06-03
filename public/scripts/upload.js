@@ -1,3 +1,6 @@
+const index = require('../../functions/index,js');
+
+
 // Your web app's Firebase configuration
 var firebaseConfig = {
     apiKey: "AIzaSyDO9Xd7vCEBsxsAIiIZp0Piz6EjQw0sF-k",
@@ -27,3 +30,5 @@ form.addEventListener('submit', function(e){
         console.log('Upload completed');
     });
 });
+
+index.helloWorld();
