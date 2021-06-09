@@ -1,22 +1,54 @@
-const functions = require("firebase-functions");
+'use strict';
 
-const admin = require('firebase-admin');
+// Firebase setup
+const functions = require("firebase-functions");
+const admin = require("firebase-admin");
 admin.initializeApp();
 
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
+// Node.js core modules
+const fs = require('fs');
+const mkdirp = fs.promises.mkdir;
+const {promisify} = require('util');
+const exec = promisify(require('child_process').exec);
+const path = require('path');
+const os = require('os');
 
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//   functions.logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+// Vision Api
+const vision = require('@google-cloud/vision');
 
+// The folder where images which need to be confirmed will be saved.
+const CONFIRMATION_FOLDER = 'confirmation';
 
+/**
+ *  Check unsafe images
+ *  If safeSearchAnnotation result is "Likely" or "Very Likely", 
+ *  judgging that the iamge is unsafe and traisiting images to CONFIRMATION_FOLDER.
+ */
+exports.checkOffensiveContent = functions.storage.object().onFinalize(async (object) => {
+    // Check the image content using the Cloud Vision Api
+    const visionClient = new vision.ImageAnnotatorClient();
+    const data = await visionClient.safeSearchDetection(
+        `gs://${object.bucket}/${object.name}`
+    );
+    const safeSearchResult = data[0].safeSearchAnnotation;
+    functions.logger.log(`SafeSearch results on image "${object.name}"`, safeSearchResult);
 
+    if(
+        safeSearchResult.adult === 'VERY_LIKELY' ||
+        safeSearchResult.adult === 'LIKELY' ||
+        safeSearchResult.spoof === 'VERY_LIKELY' ||
+        safeSearchResult.spoof === 'LIKELY' ||
+        safeSearchResult.medical === 'VERY_LIKELY' ||
+        safeSearchResult.medical === 'LIKELY' ||
+        safeSearchResult.violence === 'VERY_LIKELY' ||
+        safeSearchResult.violence === 'LIKELY' ||
+        safeSearchResult.racy === 'VERY_LIKELY' ||
+        safeSearchResult.racy === 'LIKELY'
+    ) {
+        functions.logger.log('Offensive image found.');
 
-// Trigger
-const sample = functions.storage.object().onFinalize(async (object) =>{
-    console.log("Trigger start!");
+        // Planning to create file transition function
+    }
+
+    return null;
 });
-
-exports.sample();
