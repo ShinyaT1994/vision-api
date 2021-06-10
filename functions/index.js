@@ -20,7 +20,7 @@ const vision = require('@google-cloud/vision');
 const CONFIRMATION_FOLDER = 'confirmation';
 
 /**
- *  Check unsafe images
+ *  Check offensive images
  *  If safeSearchAnnotation result is "Likely" or "Very Likely", 
  *  judgging that the iamge is unsafe and traisiting images to CONFIRMATION_FOLDER.
  */
@@ -46,9 +46,33 @@ exports.checkOffensiveContent = functions.storage.object().onFinalize(async (obj
         safeSearchResult.racy === 'LIKELY'
     ) {
         functions.logger.log('Offensive image found.');
-
-        // Planning to create file transition function
     }
+
+    return null;
+});
+
+
+/**
+ *  Check person in images
+ *  If localizedObjectAnnotations result is Person with over 80%,
+ *  judgging that the iamge contains person and traisiting images to CONFIRMATION_FOLDER.
+ */
+ exports.checkPerson = functions.storage.object().onFinalize(async (object) => {
+    // Check the image content using the Cloud Vision Api
+    const visionClient = new vision.ImageAnnotatorClient();
+    const [data] = await visionClient.objectLocalization(
+        `gs://${object.bucket}/${object.name}`
+    );
+    const checkPersonResult = data.localizedObjectAnnotations;
+    functions.logger.log(`LocalizedObject results on image "${object.name}"`, checkPersonResult);
+
+    checkPersonResult.forEach(result => {
+        functions.logger.log(result.name);
+        if(result.name === 'Person') {
+            functions.logger.log('Person found.');
+        }
+    });
+
 
     return null;
 });
