@@ -31,7 +31,6 @@ exports.checkOffensiveContent = functions.storage.object().onFinalize(async (obj
         `gs://${object.bucket}/${object.name}`
     );
     const safeSearchResult = data[0].safeSearchAnnotation;
-    functions.logger.log(`SafeSearch results on image "${object.name}"`, safeSearchResult);
 
     if(
         safeSearchResult.adult === 'VERY_LIKELY' ||
@@ -64,7 +63,6 @@ exports.checkOffensiveContent = functions.storage.object().onFinalize(async (obj
         `gs://${object.bucket}/${object.name}`
     );
     const checkPersonResult = data.localizedObjectAnnotations;
-    functions.logger.log(`LocalizedObject results on image "${object.name}"`, checkPersonResult);
 
     checkPersonResult.forEach(result => {
         functions.logger.log(result.name);
@@ -73,6 +71,28 @@ exports.checkOffensiveContent = functions.storage.object().onFinalize(async (obj
         }
     });
 
+
+    return null;
+});
+
+
+/**
+ *  Check advertising in images
+ *  If localizedObjectAnnotations result is Person with over 80%,
+ *  judgging that the iamge contains person and traisiting images to CONFIRMATION_FOLDER.
+ */
+ exports.checkAdvertising = functions.storage.object().onFinalize(async (object) => {
+    // Check the image content using the Cloud Vision Api
+    const visionClient = new vision.ImageAnnotatorClient();
+    const [data] = await visionClient.documentTextDetection(
+        `gs://${object.bucket}/${object.name}`
+    );
+    const checkAdvertisingResult = data.fullTextAnnotation;
+    functions.logger.log(`documentTextDetection results on image "${object.name}"`, checkAdvertisingResult);
+
+    if(checkAdvertisingResult !== null) {
+        functions.logger.log('Advertising foung');
+    }
 
     return null;
 });
