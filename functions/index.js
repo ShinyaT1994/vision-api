@@ -13,8 +13,11 @@ const exec = promisify(require('child_process').exec);
 const path = require('path');
 const os = require('os');
 
-// Vision Api
+// Vision Api setup
 const vision = require('@google-cloud/vision');
+
+// Database setup
+const db = admin.firestore();
 
 // The folder where images which need to be confirmed will be saved.
 const CONFIRMATION_FOLDER = 'confirmation';
@@ -45,6 +48,13 @@ exports.checkOffensiveContent = functions.storage.object().onFinalize(async (obj
         safeSearchResult.racy === 'LIKELY'
     ) {
         functions.logger.log('Offensive image found.');
+        db.collection('vision-api').doc(object.name).set({
+            safeSearchResult: 'NG'
+        }, {merge: true});
+    } else{
+        db.collection('vision-api').doc(object.name).set({
+            safeSearchResult: 'OK'
+        }, {merge: true});
     }
 
     return null;
@@ -68,6 +78,13 @@ exports.checkOffensiveContent = functions.storage.object().onFinalize(async (obj
         functions.logger.log(result.name);
         if(result.name === 'Person') {
             functions.logger.log('Person found.');
+            db.collection('vision-api').doc(object.name).set({
+                checkPersonResult: 'NG'
+            }, {merge: true});
+        } else {
+            db.collection('vision-api').doc(object.name).set({
+                checkPersonResult: 'OK'
+            }, {merge: true});
         }
     });
 
@@ -92,7 +109,19 @@ exports.checkOffensiveContent = functions.storage.object().onFinalize(async (obj
 
     if(checkAdvertisingResult !== null) {
         functions.logger.log('Advertising foung');
+        db.collection('vision-api').doc(object.name).set({
+            checkAdvertisingResult: 'NG'
+        }, {merge: true});
+    } else {
+        db.collection('vision-api').doc(object.name).set({
+            checkAdvertisingResult: 'OK'
+        }, {merge: true});
     }
 
     return null;
 });
+
+
+
+
+
