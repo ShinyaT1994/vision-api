@@ -49,7 +49,7 @@ exports.checkOffensiveContent = functions.storage.object().onFinalize(async (obj
     ) {
         functions.logger.log('Offensive image found.');
         db.collection('vision-api').doc(object.name).set({
-            safeSearchResult: 'NG'
+            safeSearchResult: 'NG',
         }, {merge: true});
     } else{
         db.collection('vision-api').doc(object.name).set({
@@ -73,20 +73,26 @@ exports.checkOffensiveContent = functions.storage.object().onFinalize(async (obj
         `gs://${object.bucket}/${object.name}`
     );
     const checkPersonResult = data.localizedObjectAnnotations;
-
-    checkPersonResult.forEach(result => {
-        functions.logger.log(result.name);
-        if(result.name === 'Person') {
-            functions.logger.log('Person found.');
-            db.collection('vision-api').doc(object.name).set({
-                checkPersonResult: 'NG'
-            }, {merge: true});
-        } else {
-            db.collection('vision-api').doc(object.name).set({
-                checkPersonResult: 'OK'
-            }, {merge: true});
-        }
-    });
+    
+    if(checkPersonResult.length === 0){
+        db.collection('vision-api').doc(object.name).set({
+            checkPersonResult: 'OK'
+        }, {merge: true});
+    } else {
+        checkPersonResult.forEach(result => {
+            functions.logger.log(result.name);
+            if(result.name === 'Person') {
+                functions.logger.log('Person found.');
+                db.collection('vision-api').doc(object.name).set({
+                    checkPersonResult: 'NG'
+                }, {merge: true});
+            } else {
+                db.collection('vision-api').doc(object.name).set({
+                    checkPersonResult: 'OK'
+                }, {merge: true});
+            }
+        });
+    }
 
 
     return null;
@@ -108,7 +114,7 @@ exports.checkOffensiveContent = functions.storage.object().onFinalize(async (obj
     functions.logger.log(`documentTextDetection results on image "${object.name}"`, checkAdvertisingResult);
 
     if(checkAdvertisingResult !== null) {
-        functions.logger.log('Advertising foung');
+        functions.logger.log('Advertising found');
         db.collection('vision-api').doc(object.name).set({
             checkAdvertisingResult: 'NG'
         }, {merge: true});

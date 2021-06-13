@@ -1,4 +1,4 @@
-// Your web app's Firebase configuration
+// Web app's Firebase configuration
 var firebaseConfig = {
     apiKey: "AIzaSyDO9Xd7vCEBsxsAIiIZp0Piz6EjQw0sF-k",
     authDomain: "vision-sample-b3dbf.firebaseapp.com",
@@ -19,7 +19,7 @@ form.addEventListener('submit', function(e){
     var uploads = [];
 
     for (var file of imgs.files){
-        var storageRef = firebase.storage().ref('form-uploaded/' + file.name);
+        var storageRef = firebase.storage().ref(file.name);
         uploads.push(storageRef.put(file));
     }
 

@@ -43,7 +43,27 @@
       <input type='file' accept='image/*' multiple='multiple' name='imgs[]'>
       <button type='submit'>Submit</button>
     </form>
+    <br><br>
+    <table>
+      <tr>
+        <th>Functions</th>
+        <th>Result</th>
+      </tr>
+      <tr>
+        <td>Safe Search Result</td>
+        <td id="safe"></td>
+      </tr>
+      <tr>
+        <td>Check Person Result</td>
+        <td id="person"></td>
+      </tr>
+      <tr>
+        <td>Check Advertising Result</td>
+        <td id="advertising"></td>
+      </tr>
+    </table>
 
+    
     <!-- The core Firebase JS SDK is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-storage.js"></script>
@@ -51,5 +71,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-functions.js"></script>
 
     <script src="scripts/upload.js"></script>
+    <script src="scripts/database.js"></script>
   </body>
 </html>
